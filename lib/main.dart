@@ -1,20 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/app_name.dart';
+import 'package:flutter_application_1/di/di.dart';
 
-void main() {
-  runApp(const MainApp());
-}
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await setupLocator();
 
-class MainApp extends StatelessWidget {
-  const MainApp({super.key});
+  FlutterError.onError = (details) {
+    return talker.handle(details.exception, details.stack);
+  };
 
-  @override
-  Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: Scaffold(
-        body: Center(
-          child: Text('Hello World!'),
-        ),
-      ),
-    );
-  }
+  runApp(const AppName());
 }
