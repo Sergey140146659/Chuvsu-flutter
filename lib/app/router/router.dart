@@ -20,5 +20,14 @@ final router = GoRouter(
         child: const HomeScreen(),
       ),
     ),
+    GoRoute(
+      path: '/content/:id',
+      pageBuilder: (_, state) => MaterialPage(
+        key: state.pageKey,
+        child: ContentScreen(
+          contentId: state.pathParameters['id']!,
+        ),
+      ),
+    ),
   ],
 );
