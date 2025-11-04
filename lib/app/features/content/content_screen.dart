@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_application_1/app/app.dart';
+import 'package:flutter_application_1/app/features/content/bloc/content_bloc.dart';
+import 'package:flutter_application_1/data/repositories/models/model_info.dart';
+import 'package:flutter_application_1/di/di.dart';
 
 class ContentScreen extends StatelessWidget {
   const ContentScreen({
@@ -10,25 +15,99 @@ class ContentScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Content ID: $contentId'),
+    return BlocProvider(
+      create: (context) => getIt<ContentBloc>()
+        ..add(LoadModelDetails(modelId: contentId)),
+      child: BlocBuilder<ContentBloc, ContentState>(
+        builder: (context, state) {
+          if (state is ModelDetailsLoading) {
+            return Scaffold(
+              appBar: AppBar(),
+              body: const Center(child: CircularProgressIndicator()),
+            );
+          }
+          if (state is ModelDetailsLoaded) {
+            return _buildContent(context, state.model);
+          }
+          if (state is ModelDetailsLoadingFailure) {
+            return Scaffold(
+              appBar: AppBar(title: const Text('Error')),
+              body: _buildError(context, state.exception),
+            );
+          }
+          return Scaffold(appBar: AppBar());
+        },
       ),
-      body: Column(
+    );
+  }
+
+  Widget _buildContent(BuildContext context, ModelInfo model) {
+    return Scaffold(
+      appBar: AppBar(title: Text(model.id, overflow: TextOverflow.ellipsis)),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(
+              height: 100,
+              width: 100,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(16),
+                child: Image.asset(
+                  'assets/images/photo1.jpg',
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+            16.ph,
+            Text(
+              'Model ID: ${model.id}',
+              style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+            ),
+            8.ph,
+            if (model.pipelineTag != null)
+              Text('Task: ${model.pipelineTag}', style: Theme.of(context).textTheme.titleMedium),
+            24.ph,
+
+            Text('Model Files:', style: Theme.of(context).textTheme.titleLarge),
+            10.ph,
+            if (model.siblings != null && model.siblings!.isNotEmpty)
+              ListView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: model.siblings!.length,
+                itemBuilder: (context, index) {
+                  final file = model.siblings![index];
+                  return Card(
+                    child: ListTile(
+                      leading: const Icon(Icons.insert_drive_file_outlined),
+                      title: Text(file.rfilename),
+                    ),
+                  );
+                },
+              )
+            else
+              const Text('No file information available.'),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildError(BuildContext context, Object exception) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          SizedBox(
-            height: 250,
-            width: double.infinity,
-            child: Image.asset(
-              'assets/images/photo1.jpg',
-              fit: BoxFit.contain,
-            ),
-          ),
-          const SizedBox(height: 20),
-          Center(
-            child: Text(
-              'Detailed information for item with ID $contentId will be here.',
-            ),
+          const Text('Failed to load model details'),
+          Text(exception.toString()),
+          20.ph,
+          ElevatedButton(
+            onPressed: () {
+              context.read<ContentBloc>().add(LoadModelDetails(modelId: contentId));
+            },
+            child: const Text('Try again'),
           ),
         ],
       ),
