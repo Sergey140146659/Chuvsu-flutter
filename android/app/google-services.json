@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "124598624691",
+    "project_id": "chuvsu-flutter",
+    "storage_bucket": "chuvsu-flutter.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:124598624691:android:6e0478eb27c884a82eabc6",
+        "android_client_info": {
+          "package_name": "com.example.flutter_application_1"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCxfMK85SA3BXoleWe1im8fzh75eeKHWDI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
