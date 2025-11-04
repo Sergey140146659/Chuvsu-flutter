@@ -1,18 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_application_1/data/repositories/models/model_info.dart';
 
 class ContentCard extends StatelessWidget {
-  const ContentCard({super.key, required this.id,});
+  const ContentCard({
+    super.key,
+    required this.model,
+  });
 
-  final int id;
+  final ModelInfo model;
 
   @override
   Widget build(BuildContext context) {
     const double imageSize = 100.0;
+    final theme = Theme.of(context);
 
     return InkWell(
-      onTap: () => context.push('/content/$id'),
       borderRadius: BorderRadius.circular(16),
+      onTap: () {
+        final encodedId = Uri.encodeComponent(model.id);
+        context.push('/content/$encodedId');
+      },
       child: SizedBox(
         height: imageSize,
         child: Row(
@@ -33,20 +41,19 @@ class ContentCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Title',
-                    maxLines: 1,
+                    model.id,
+                    maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: Theme.of(context).textTheme.titleLarge,
+                    style: theme.textTheme.titleLarge,
                   ),
                   const SizedBox(height: 4),
-                  Expanded(
-                    child: Text(
-                      'Description',
-                      maxLines: 3,
+                  if (model.pipelineTag != null)
+                    Text(
+                      model.pipelineTag!,
+                      maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      style: Theme.of(context).textTheme.bodyMedium,
+                      style: theme.textTheme.bodyMedium,
                     ),
-                  ),
                 ],
               ),
             ),
