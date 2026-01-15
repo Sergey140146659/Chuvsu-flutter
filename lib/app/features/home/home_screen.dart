@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:flutter_application_1/app/app.dart';
 import 'package:flutter_application_1/app/features/home/bloc/home_bloc.dart';
+import 'package:flutter_application_1/data/services/auth_service_interface.dart';
 import 'package:flutter_application_1/di/di.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -12,7 +14,20 @@ class HomeScreen extends StatelessWidget {
     return BlocProvider(
       create: (context) => getIt<HomeBloc>()..add(LoadModelsList()),
       child: Scaffold(
-        appBar: AppBar(title: const Text('Hugging Face Models')),
+        appBar: AppBar(
+          title: const Text('Hugging Face Models'),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.logout),
+              onPressed: () async {
+                await getIt<AuthServiceInterface>().logOut();
+                if (context.mounted) {
+                  context.go('/login');
+                }
+              },
+            ),
+          ],
+        ),
         body: BlocBuilder<HomeBloc, HomeState>(
           builder: (context, state) {
             if (state is ModelsListLoading) {
