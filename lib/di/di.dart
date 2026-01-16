@@ -10,6 +10,9 @@ import 'package:flutter_application_1/data/services/auth_service.dart';
 import 'package:flutter_application_1/data/services/auth_service_interface.dart';
 import 'package:flutter_application_1/app/features/register/bloc/register_bloc.dart';
 import 'package:flutter_application_1/app/features/login/bloc/login_bloc.dart';
+import 'package:flutter_application_1/app/features/favorites/bloc/favorites_bloc.dart';
+import 'package:flutter_application_1/data/services/favorites_service.dart';
+import 'package:flutter_application_1/data/services/favorites_service_interface.dart';
 
 final getIt = GetIt.instance;
 final talker = TalkerFlutter.init();
@@ -28,6 +31,10 @@ Future<void> setupLocator() async {
 
   getIt.registerLazySingleton<AuthServiceInterface>(
     () => AuthService(),
+  );
+
+  getIt.registerLazySingleton<FavoritesServiceInterface>(
+    () => FavoritesService(),
   );
 
   getIt.registerFactory<HomeBloc>(
@@ -50,5 +57,9 @@ Future<void> setupLocator() async {
 
   getIt.registerFactory<LoginBloc>(
     () => LoginBloc(getIt<AuthServiceInterface>()),
+  );
+
+  getIt.registerFactory<FavoritesBloc>(
+    () => FavoritesBloc(getIt<FavoritesServiceInterface>()),
   );
 }

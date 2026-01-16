@@ -18,6 +18,12 @@ class HomeScreen extends StatelessWidget {
           title: const Text('Hugging Face Models'),
           actions: [
             IconButton(
+              icon: const Icon(Icons.favorite),
+              onPressed: () {
+                context.push('/favorites');
+              },
+            ),
+            IconButton(
               icon: const Icon(Icons.logout),
               onPressed: () async {
                 await getIt<AuthServiceInterface>().logOut();
