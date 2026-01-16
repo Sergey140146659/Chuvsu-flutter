@@ -43,5 +43,12 @@ final router = GoRouter(
         child: const LoginScreen(),
       ),
     ),
+    GoRoute(
+      path: '/favorites',
+      pageBuilder: (_, state) => MaterialPage(
+        key: state.pageKey,
+        child: const FavoritesScreen(),
+      ),
+    ),
   ],
 );

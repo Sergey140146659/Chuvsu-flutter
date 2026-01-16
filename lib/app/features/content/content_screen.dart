@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_application_1/app/app.dart';
 import 'package:flutter_application_1/app/features/content/bloc/content_bloc.dart';
+import 'package:flutter_application_1/app/features/favorites/bloc/favorites_bloc.dart';
 import 'package:flutter_application_1/data/repositories/models/model_info.dart';
 import 'package:flutter_application_1/di/di.dart';
 
@@ -15,9 +16,16 @@ class ContentScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => getIt<ContentBloc>()
-        ..add(LoadModelDetails(modelId: contentId)),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) => getIt<ContentBloc>()
+            ..add(LoadModelDetails(modelId: contentId)),
+        ),
+        BlocProvider(
+          create: (context) => getIt<FavoritesBloc>()..add(FavoritesLoad()),
+        ),
+      ],
       child: BlocBuilder<ContentBloc, ContentState>(
         builder: (context, state) {
           if (state is ModelDetailsLoading) {
@@ -41,9 +49,36 @@ class ContentScreen extends StatelessWidget {
     );
   }
 
+  Widget _buildFavoriteButton(BuildContext context, String modelId) {
+    return BlocBuilder<FavoritesBloc, FavoritesState>(
+      builder: (context, state) {
+        final isFavorite = state is FavoritesLoaded &&
+            state.favoriteIds.contains(modelId);
+        return IconButton(
+          icon: Icon(
+            isFavorite ? Icons.favorite : Icons.favorite_border,
+            color: isFavorite ? Colors.red : null,
+          ),
+          onPressed: () {
+            if (isFavorite) {
+              context.read<FavoritesBloc>().add(FavoritesRemove(modelId: modelId));
+            } else {
+              context.read<FavoritesBloc>().add(FavoritesAdd(modelId: modelId));
+            }
+          },
+        );
+      },
+    );
+  }
+
   Widget _buildContent(BuildContext context, ModelInfo model) {
     return Scaffold(
-      appBar: AppBar(title: Text(model.id, overflow: TextOverflow.ellipsis)),
+      appBar: AppBar(
+        title: Text(model.id, overflow: TextOverflow.ellipsis),
+        actions: [
+          _buildFavoriteButton(context, model.id),
+        ],
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
